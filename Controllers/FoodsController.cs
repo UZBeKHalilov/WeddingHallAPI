@@ -84,6 +84,56 @@ namespace WeddingHallAPI.Controllers
             return CreatedAtAction("GetFood", new { id = food.Id }, food);
         }
 
+        // POST: api/WeddingHalls/upload-image
+        [HttpPost("upload-image")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file, [FromServices] IWebHostEnvironment hostEnvironment)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+            var foods = await _context.Foods.FindAsync(id);
+
+            if (foods == null)
+            {
+                return NotFound();
+            }
+
+            // Ensure the images directory exists
+            var imagePath = Path.Combine(hostEnvironment.WebRootPath, "images");
+            if (!Directory.Exists(imagePath))
+            {
+                Directory.CreateDirectory(imagePath);
+            }
+
+            // Validate file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.");
+            }
+
+            // Restrict file size (example: 5MB)
+            const long maxFileSize = 5 * 1024 * 1024; // 5MB
+            if (file.Length > maxFileSize)
+            {
+                return BadRequest("File size exceeds the maximum limit of 5MB.");
+            }
+
+            var uploadsFolder = Path.Combine(hostEnvironment.ContentRootPath, "wwwroot", "images", "weddinghalls");
+            Directory.CreateDirectory(uploadsFolder); // Ensure the directory exists
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            foods.ImageUrl = $"/images/weddinghalls/{fileName}";
+            await _context.SaveChangesAsync();
+            return Ok(new { ImageUrl = foods.ImageUrl });
+        }
+
         // DELETE: api/Foods/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFood(int id)

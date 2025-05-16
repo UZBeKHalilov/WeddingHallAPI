@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using WeddingHallAPI.Data;
 using WeddingHallAPI.Models;
 
@@ -86,6 +87,86 @@ namespace WeddingHallAPI.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetWeddingHall", new { id = weddingHall.Id }, weddingHall);
+        }
+
+        // POST: api/WeddingHallsArray
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("Array")]
+        public async Task<ActionResult<IEnumerable<WeddingHall>>> PostWeddingHallsArray(IEnumerable<WeddingHall> weddingHalls)
+        {
+            _context.WeddingHalls.AddRange(weddingHalls);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetWeddingHalls", weddingHalls);
+        }
+
+        // POST: api/WeddingHalls/upload-image
+        [HttpPost("upload-image")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file, [FromServices] IWebHostEnvironment hostEnvironment)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file uploaded.");
+            }
+            var weddingHall = await _context.WeddingHalls.FindAsync(id);
+
+            if (weddingHall == null)
+            {
+                return NotFound();
+            }
+
+            // Ensure the images directory exists
+            var imagePath = Path.Combine(hostEnvironment.WebRootPath, "images");
+            if (!Directory.Exists(imagePath))
+            {
+                Directory.CreateDirectory(imagePath);
+            }
+
+            // Validate file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                return BadRequest("Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.");
+            }
+
+            // Restrict file size (example: 5MB)
+            const long maxFileSize = 5 * 1024 * 1024; // 5MB
+            if (file.Length > maxFileSize)
+            {
+                return BadRequest("File size exceeds the maximum limit of 5MB.");
+            }
+
+            //// Generate a unique file name and save the file
+            //var fileName = $"{Guid.NewGuid()}{fileExtension}";
+            //var filePath = Path.Combine(imagePath, fileName);
+
+            //using (var stream = new FileStream(filePath, FileMode.Create))
+            //{
+            //    await file.CopyToAsync(stream);
+            //}
+
+            //// Cleanup old image if exists
+            //if (!string.IsNullOrEmpty(weddingHall.ImageUrl))
+            //{
+            //    var oldImagePath = Path.Combine(hostEnvironment.WebRootPath, weddingHall.ImageUrl.TrimStart('/'));
+            //    if (System.IO.File.Exists(oldImagePath))
+            //    {
+            //        System.IO.File.Delete(oldImagePath);
+            //    }
+            //}
+
+
+            var uploadsFolder = Path.Combine(hostEnvironment.ContentRootPath, "wwwroot", "images", "weddinghalls");
+            Directory.CreateDirectory(uploadsFolder); // Ensure the directory exists
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            weddingHall.ImageUrl = $"/images/weddinghalls/{fileName}";
+            await _context.SaveChangesAsync();
+            return Ok(new { ImageUrl = weddingHall.ImageUrl });
         }
 
         // DELETE: api/WeddingHalls/5

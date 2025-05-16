@@ -16,6 +16,7 @@ namespace WeddingHallAPI.Models
         public string Description { get; set; } = string.Empty;
 
         public int CategoryId { get; set; } = 0;
+        public string ImageUrl { get; set; }    
 
         [Required]
         [ForeignKey(nameof(WeddingHall))]
