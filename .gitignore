@@ -55,8 +55,4 @@ nunit-*.xml
 appsettings.json
 *.vsidx
 bin/
-obj/
-*.user
-*.suo
-*.db
 appsettings.*.json
