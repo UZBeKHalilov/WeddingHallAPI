@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<WeddingHallDbContext>(options =>
-       options.UseSqlite("Data Source=weddinghall.db"));
+       options.UseInMemoryDatabase("WeddingHallDb"));
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
