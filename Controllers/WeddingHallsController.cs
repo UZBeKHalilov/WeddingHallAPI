@@ -37,7 +37,9 @@ namespace WeddingHallAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<WeddingHall>> GetWeddingHall(int id)
         {
-            var weddingHall = await _context.WeddingHalls.FindAsync(id);
+            var weddingHall = await _context.WeddingHalls
+                .Include(w => w.Foods)
+                .FirstOrDefaultAsync(w => w.Id == id);
 
             if (weddingHall == null)
             {
@@ -114,8 +116,8 @@ namespace WeddingHallAPI.Controllers
                 return NotFound();
             }
 
-            // Ensure the images directory exists
-            var imagePath = Path.Combine(hostEnvironment.WebRootPath, "images");
+            var webRootPath = hostEnvironment.WebRootPath ?? Path.Combine(hostEnvironment.ContentRootPath, "wwwroot");
+            var imagePath = Path.Combine(webRootPath, "images");
             if (!Directory.Exists(imagePath))
             {
                 Directory.CreateDirectory(imagePath);

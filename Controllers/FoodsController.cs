@@ -98,9 +98,8 @@ namespace WeddingHallAPI.Controllers
             {
                 return NotFound();
             }
-
-            // Ensure the images directory exists
-            var imagePath = Path.Combine(hostEnvironment.WebRootPath, "images");
+            var webRootPath = hostEnvironment.WebRootPath ?? Path.Combine(hostEnvironment.ContentRootPath, "wwwroot");
+            var imagePath = Path.Combine(webRootPath, "images");
             if (!Directory.Exists(imagePath))
             {
                 Directory.CreateDirectory(imagePath);
