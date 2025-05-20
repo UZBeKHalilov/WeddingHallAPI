@@ -12,6 +12,11 @@ namespace WeddingHallAPI.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
+        public bool IsVerified { get; set; } = false;
 
+        // OTP fields
+        public string? OtpCode { get; set; } = string.Empty;
+        public int OtpAttempts { get; set; } = 0;
+        public DateTime? OtpExpiresAt { get; set; } = DateTime.UtcNow.AddMinutes(5);
     }
 }

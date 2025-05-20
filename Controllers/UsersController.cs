@@ -1,108 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
 using WeddingHallAPI.Data;
 using WeddingHallAPI.Models;
+using WeddingHallAPI.Services;
+using WeddingHallAPI.DTOs;
 
 namespace WeddingHallAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController(WeddingHallDbContext context, IEmailOtpService emailOtpService) : ControllerBase
     {
-        private readonly WeddingHallDbContext _context;
+        private readonly WeddingHallDbContext _context = context;
+        private readonly IEmailOtpService _emailOtpService = emailOtpService;
 
-        public UsersController(WeddingHallDbContext context)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterDto dto)
         {
-            _context = context;
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (existingUser != null)
+                return BadRequest("Email already registered");
+
+            var user = new User
+            {
+                Email = dto.Email,
+                FullName = dto.FullName,
+                OtpCode = GenerateOtp(),
+                OtpExpiresAt = DateTime.UtcNow.AddMinutes(5),
+                IsVerified = false
+            };
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            _emailOtpService.SendOtpEmail(user.Email, user.OtpCode);  // <-- send OTP
+
+            return Ok("One-Time Password sent to your email.");
         }
 
-        // GET: api/Users
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp(VerifyOtpDto dto)
         {
-            return await _context.Users.ToListAsync();
-        }
-
-        // GET: api/Users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null)
+                return BadRequest("One-Time Password");
+
+            if (user.OtpAttempts >= 5)
+                return BadRequest("Too many attempts. Try again later.");
+
+            if (user.IsVerified)
+                return Ok("Already confirmed.");
+
+            if (user.OtpCode != dto.OtpCode || user.OtpExpiresAt < DateTime.UtcNow)
             {
-                return NotFound();
-            }
-
-            return user;
-        }
-
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
-        {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
+                user.OtpAttempts++;
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest("Invalid email or One-Time Password.");
             }
 
-            return NoContent();
-        }
-
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            _context.Users.Add(user);
+            user.IsVerified = true;
+            user.OtpCode = null;
+            user.OtpExpiresAt = null;
+            user.OtpAttempts = 0;
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return Ok(user);
         }
 
-        // DELETE: api/Users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        
+        
+        // Helper method to generate a random 6-digit OTP
+        private string GenerateOtp()
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
+            return new Random().Next(100000, 999999).ToString();
         }
     }
 }

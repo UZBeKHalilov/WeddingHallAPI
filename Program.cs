@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using WeddingHallAPI.Models;
 using WeddingHallAPI.Data;
+using WeddingHallAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,10 +8,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<WeddingHallDbContext>(options =>
        options.UseInMemoryDatabase("WeddingHallDb"));
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IEmailOtpService, EmailOtpService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
 
 var app = builder.Build();
 app.UseCors("AllowAll");
