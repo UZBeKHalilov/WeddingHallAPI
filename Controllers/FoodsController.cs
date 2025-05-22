@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WeddingHallAPI.Data;
 using WeddingHallAPI.Models;
+using WeddingHallAPI.Services;
 
 namespace WeddingHallAPI.Controllers
 {
@@ -15,16 +16,19 @@ namespace WeddingHallAPI.Controllers
     public class FoodsController : ControllerBase
     {
         private readonly WeddingHallDbContext _context;
+        private readonly IDataService _dataService;
 
-        public FoodsController(WeddingHallDbContext context)
+        public FoodsController(WeddingHallDbContext context, IDataService dataService)
         {
             _context = context;
+            _dataService = dataService;
         }
-
+            
         // GET: api/Foods
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Food>>> GetFoods()
         {
+            _dataService.CheckFixData();
             return await _context.Foods.ToListAsync();
         }
 
@@ -32,6 +36,7 @@ namespace WeddingHallAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Food>> GetFood(int id)
         {
+            _dataService.CheckFixData();
             var food = await _context.Foods.FindAsync(id);
 
             if (food == null)
@@ -43,7 +48,6 @@ namespace WeddingHallAPI.Controllers
         }
 
         // PUT: api/Foods/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFood(int id, Food food)
         {
@@ -57,6 +61,45 @@ namespace WeddingHallAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                _dataService.SaveDataToJSON();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!FoodExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        //PUT: api/Foods/5/image-url   
+        [HttpPut("{id}/image-url")]
+        public async Task<IActionResult> PutFoodImageUrl(int id, [FromBody] string imageUrl)
+        {
+            var food = await _context.Foods.FindAsync(id);
+            if (food == null)
+            {
+                return NotFound();
+            }
+
+            if (string.IsNullOrWhiteSpace(imageUrl))
+            {
+                return BadRequest("ImageUrl cannot be nothing");
+            }
+
+            food.ImageUrl = imageUrl;
+            _context.Entry(food).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                _dataService.SaveDataToJSON();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -74,12 +117,12 @@ namespace WeddingHallAPI.Controllers
         }
 
         // POST: api/Foods
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Food>> PostFood(Food food)
         {
             _context.Foods.Add(food);
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
 
             return CreatedAtAction("GetFood", new { id = food.Id }, food);
         }
@@ -130,6 +173,7 @@ namespace WeddingHallAPI.Controllers
             }
             foods.ImageUrl = $"/images/weddinghalls/{fileName}";
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
             return Ok(new { ImageUrl = foods.ImageUrl });
         }
 
@@ -145,6 +189,7 @@ namespace WeddingHallAPI.Controllers
 
             _context.Foods.Remove(food);
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
 
             return NoContent();
         }

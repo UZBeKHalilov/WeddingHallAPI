@@ -7,6 +7,7 @@ namespace WeddingHallAPI.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        [StringLength(50, ErrorMessage = "Username cannot be longer than 50 characters.")]
         public string FullName { get; set; } = string.Empty;
 
         [Required]

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WeddingHallAPI.Data;
 using WeddingHallAPI.Models;
+using WeddingHallAPI.Services;
 
 namespace WeddingHallAPI.Controllers
 {
@@ -16,27 +17,33 @@ namespace WeddingHallAPI.Controllers
     public class WeddingHallsController : ControllerBase
     {
         private readonly WeddingHallDbContext _context;
+        private readonly IDataService _dataService;
 
-        public WeddingHallsController(WeddingHallDbContext context)
+        public WeddingHallsController(WeddingHallDbContext context, IDataService dataService)
         {
             _context = context;
+            _dataService = dataService;
         }
+
+
 
         // GET: api/WeddingHalls
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WeddingHall>>> GetWeddingHalls()
         {
-            var weddingHall = await _context.WeddingHalls
+            _dataService.CheckFixData();
+            var weddingHalls = await _context.WeddingHalls
                 .Include(w => w.Foods)
                 .ToListAsync();
 
-            return weddingHall;
+            return weddingHalls;
         }
 
         // GET: api/WeddingHalls/5
         [HttpGet("{id}")]
         public async Task<ActionResult<WeddingHall>> GetWeddingHall(int id)
         {
+            _dataService.CheckFixData();
             var weddingHall = await _context.WeddingHalls
                 .Include(w => w.Foods)
                 .FirstOrDefaultAsync(w => w.Id == id);
@@ -50,7 +57,6 @@ namespace WeddingHallAPI.Controllers
         }
 
         // PUT: api/WeddingHalls/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutWeddingHall(int id, WeddingHall weddingHall)
         {
@@ -64,6 +70,7 @@ namespace WeddingHallAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                _dataService.SaveDataToJSON();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -81,23 +88,23 @@ namespace WeddingHallAPI.Controllers
         }
 
         // POST: api/WeddingHalls
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<WeddingHall>> PostWeddingHall(WeddingHall weddingHall)
         {
             _context.WeddingHalls.Add(weddingHall);
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
 
             return CreatedAtAction("GetWeddingHall", new { id = weddingHall.Id }, weddingHall);
         }
 
         // POST: api/WeddingHallsArray
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("Array")]
         public async Task<ActionResult<IEnumerable<WeddingHall>>> PostWeddingHallsArray(IEnumerable<WeddingHall> weddingHalls)
         {
             _context.WeddingHalls.AddRange(weddingHalls);
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
             return CreatedAtAction("GetWeddingHalls", weddingHalls);
         }
 
@@ -138,26 +145,6 @@ namespace WeddingHallAPI.Controllers
                 return BadRequest("File size exceeds the maximum limit of 5MB.");
             }
 
-            //// Generate a unique file name and save the file
-            //var fileName = $"{Guid.NewGuid()}{fileExtension}";
-            //var filePath = Path.Combine(imagePath, fileName);
-
-            //using (var stream = new FileStream(filePath, FileMode.Create))
-            //{
-            //    await file.CopyToAsync(stream);
-            //}
-
-            //// Cleanup old image if exists
-            //if (!string.IsNullOrEmpty(weddingHall.ImageUrl))
-            //{
-            //    var oldImagePath = Path.Combine(hostEnvironment.WebRootPath, weddingHall.ImageUrl.TrimStart('/'));
-            //    if (System.IO.File.Exists(oldImagePath))
-            //    {
-            //        System.IO.File.Delete(oldImagePath);
-            //    }
-            //}
-
-
             var uploadsFolder = Path.Combine(hostEnvironment.ContentRootPath, "wwwroot", "images", "weddinghalls");
             Directory.CreateDirectory(uploadsFolder); // Ensure the directory exists
             var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
@@ -168,7 +155,40 @@ namespace WeddingHallAPI.Controllers
             }
             weddingHall.ImageUrl = $"/images/weddinghalls/{fileName}";
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
             return Ok(new { ImageUrl = weddingHall.ImageUrl });
+        }
+
+
+
+        // PUT: api/WeddingHalls/5/image-url
+        [HttpPut("{id}/image-url")]
+        public async Task<IActionResult> PutWeddingHallImageUrl(int id, [FromBody] string imageUrl)
+        {
+            var weddingHall = await _context.WeddingHalls.FindAsync(id);
+            if (weddingHall == null)
+            {
+                return NotFound();
+            }
+            weddingHall.ImageUrl = imageUrl;
+            _context.Entry(weddingHall).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+                _dataService.SaveDataToJSON();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!WeddingHallExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return NoContent();
         }
 
         // DELETE: api/WeddingHalls/5
@@ -183,8 +203,21 @@ namespace WeddingHallAPI.Controllers
 
             _context.WeddingHalls.Remove(weddingHall);
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
 
             return NoContent();
+        }
+
+        [HttpDelete("Clear-All-Data")]
+        public IActionResult ClearAllData(string password)
+        {
+            if (password != "KHalilov0548")
+            {
+                return Unauthorized("Invalid password.");
+            }
+
+            _dataService.ClearData();
+            return Ok("All data cleared.");
         }
 
         private bool WeddingHallExists(int id)

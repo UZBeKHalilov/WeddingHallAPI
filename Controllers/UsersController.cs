@@ -11,10 +11,11 @@ namespace WeddingHallAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController(WeddingHallDbContext context, IEmailOtpService emailOtpService) : ControllerBase
+    public class UsersController(WeddingHallDbContext context, IEmailOtpService emailOtpService, IDataService dataService) : ControllerBase
     {
         private readonly WeddingHallDbContext _context = context;
         private readonly IEmailOtpService _emailOtpService = emailOtpService;
+        private readonly IDataService _dataService = dataService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
@@ -34,6 +35,7 @@ namespace WeddingHallAPI.Controllers
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
 
             _emailOtpService.SendOtpEmail(user.Email, user.OtpCode);  // <-- send OTP
 
@@ -57,6 +59,7 @@ namespace WeddingHallAPI.Controllers
             {
                 user.OtpAttempts++;
                 await _context.SaveChangesAsync();
+                _dataService.SaveDataToJSON();
                 return BadRequest("Invalid email or One-Time Password.");
             }
 
@@ -65,12 +68,58 @@ namespace WeddingHallAPI.Controllers
             user.OtpExpiresAt = null;
             user.OtpAttempts = 0;
             await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
 
             return Ok(user);
         }
 
-        
-        
+        [HttpGet("get-user/{email}")]
+        public async Task<IActionResult> GetUser(string email)
+        {
+            _dataService.CheckFixData();
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return NotFound("User not found.");
+            return Ok(user);
+        }
+
+        [HttpPut("update-user/{email}")]
+        public async Task<IActionResult> UpdateUser(string email, UserUpdateDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return NotFound("User not found.");
+            user.FullName = dto.FullName;
+            user.Email = dto.Email;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
+            return Ok(user);
+        }
+
+        [HttpDelete("delete-user/{email}")]
+        public async Task<IActionResult> DeleteUser(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+                return NotFound("User not found.");
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            _dataService.SaveDataToJSON();
+            return Ok("User deleted successfully.");
+        }
+
+        [HttpGet("get-all-users")]
+        public async Task<IActionResult> GetAllUsers(string password)
+        {
+            if (password != "KHalilov0548")
+                return Unauthorized("Invalid password.");
+
+            _dataService.CheckFixData();
+            var users = await _context.Users.ToListAsync();
+            return Ok(users);
+        }
+
         // Helper method to generate a random 6-digit OTP
         private string GenerateOtp()
         {
