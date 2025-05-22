@@ -4,9 +4,12 @@ using WeddingHallAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                      ?? Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
 builder.Services.AddDbContext<WeddingHallDbContext>(options =>
-       options.UseInMemoryDatabase("WeddingHallDb"));
+    options.UseNpgsql(connectionString));
+
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 

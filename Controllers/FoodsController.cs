@@ -16,19 +16,16 @@ namespace WeddingHallAPI.Controllers
     public class FoodsController : ControllerBase
     {
         private readonly WeddingHallDbContext _context;
-        private readonly IDataService _dataService;
 
-        public FoodsController(WeddingHallDbContext context, IDataService dataService)
+        public FoodsController(WeddingHallDbContext context)
         {
             _context = context;
-            _dataService = dataService;
         }
             
         // GET: api/Foods
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Food>>> GetFoods()
         {
-            _dataService.CheckFixData();
             return await _context.Foods.ToListAsync();
         }
 
@@ -36,7 +33,6 @@ namespace WeddingHallAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Food>> GetFood(int id)
         {
-            _dataService.CheckFixData();
             var food = await _context.Foods.FindAsync(id);
 
             if (food == null)
@@ -61,7 +57,6 @@ namespace WeddingHallAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                _dataService.SaveDataToJSON();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -99,7 +94,6 @@ namespace WeddingHallAPI.Controllers
             try
             {
                 await _context.SaveChangesAsync();
-                _dataService.SaveDataToJSON();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -122,7 +116,6 @@ namespace WeddingHallAPI.Controllers
         {
             _context.Foods.Add(food);
             await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
 
             return CreatedAtAction("GetFood", new { id = food.Id }, food);
         }
@@ -173,7 +166,6 @@ namespace WeddingHallAPI.Controllers
             }
             foods.ImageUrl = $"/images/weddinghalls/{fileName}";
             await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
             return Ok(new { ImageUrl = foods.ImageUrl });
         }
 
@@ -189,7 +181,6 @@ namespace WeddingHallAPI.Controllers
 
             _context.Foods.Remove(food);
             await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
 
             return NoContent();
         }

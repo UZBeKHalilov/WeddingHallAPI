@@ -3,16 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|c:\\users\\abdulloh\\desktop\\github\\weddinghallapi\\data\\weddinghalldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|solutionrelative:data\\weddinghalldbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|c:\\users\\abdulloh\\desktop\\github\\weddinghallapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|c:\\users\\abdulloh\\desktop\\github\\weddinghallapi\\services\\dataservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|solutionrelative:services\\dataservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|c:\\users\\abdulloh\\desktop\\github\\weddinghallapi\\controllers\\weddinghallscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|solutionrelative:controllers\\weddinghallscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|c:\\users\\abdulloh\\desktop\\github\\weddinghallapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|c:\\users\\abdulloh\\desktop\\github\\weddinghallapi\\services\\dataservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|solutionrelative:services\\dataservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{29B5A348-1A2D-4FB0-9A89-51C124D547A0}|WeddingHallAPI.csproj|c:\\users\\abdulloh\\desktop\\github\\weddinghallapi\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -42,11 +50,24 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 13,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "WeddingHallDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Data\\WeddingHallDbContext.cs",
+              "RelativeDocumentMoniker": "Data\\WeddingHallDbContext.cs",
+              "ToolTip": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Data\\WeddingHallDbContext.cs",
+              "RelativeToolTip": "Data\\WeddingHallDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-22T06:01:50.846Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Bookmark",
@@ -70,7 +91,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-22T05:54:39.486Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "DataService.cs",
               "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Services\\DataService.cs",
               "RelativeDocumentMoniker": "Services\\DataService.cs",
@@ -83,7 +117,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "WeddingHall.cs",
               "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Models\\WeddingHall.cs",
               "RelativeDocumentMoniker": "Models\\WeddingHall.cs",
@@ -95,7 +129,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Models\\User.cs",
               "RelativeDocumentMoniker": "Models\\User.cs",
@@ -107,7 +141,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "UserUpdateDto.cs",
               "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\DTOs\\UserUpdateDto.cs",
               "RelativeDocumentMoniker": "DTOs\\UserUpdateDto.cs",
@@ -119,7 +153,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "UsersController.cs",
               "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Controllers\\UsersController.cs",
               "RelativeDocumentMoniker": "Controllers\\UsersController.cs",
@@ -131,7 +165,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "FoodsController.cs",
               "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Controllers\\FoodsController.cs",
               "RelativeDocumentMoniker": "Controllers\\FoodsController.cs",
@@ -149,19 +183,20 @@
               "RelativeDocumentMoniker": "Controllers\\WeddingHallsController.cs",
               "ToolTip": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Controllers\\WeddingHallsController.cs",
               "RelativeToolTip": "Controllers\\WeddingHallsController.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAqwOMAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-21T13:56:33.964Z"
+              "WhenOpened": "2025-05-21T13:56:33.964Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-15T12:51:11.04Z",
               "EditorCaption": ""

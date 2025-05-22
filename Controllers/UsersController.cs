@@ -11,11 +11,10 @@ namespace WeddingHallAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController(WeddingHallDbContext context, IEmailOtpService emailOtpService, IDataService dataService) : ControllerBase
+    public class UsersController(WeddingHallDbContext context, IEmailOtpService emailOtpService) : ControllerBase
     {
         private readonly WeddingHallDbContext _context = context;
         private readonly IEmailOtpService _emailOtpService = emailOtpService;
-        private readonly IDataService _dataService = dataService;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
@@ -34,8 +33,7 @@ namespace WeddingHallAPI.Controllers
             };
 
             await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
 
             _emailOtpService.SendOtpEmail(user.Email, user.OtpCode);  // <-- send OTP
 
@@ -58,8 +56,7 @@ namespace WeddingHallAPI.Controllers
             if (user.OtpCode != dto.OtpCode || user.OtpExpiresAt < DateTime.UtcNow)
             {
                 user.OtpAttempts++;
-                await _context.SaveChangesAsync();
-                _dataService.SaveDataToJSON();
+                await _context.SaveChangesAsync();                
                 return BadRequest("Invalid email or One-Time Password.");
             }
 
@@ -67,16 +64,14 @@ namespace WeddingHallAPI.Controllers
             user.OtpCode = null;
             user.OtpExpiresAt = null;
             user.OtpAttempts = 0;
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
 
             return Ok(user);
         }
 
         [HttpGet("get-user/{email}")]
         public async Task<IActionResult> GetUser(string email)
-        {
-            _dataService.CheckFixData();
+        {            
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
                 return NotFound("User not found.");
@@ -92,8 +87,7 @@ namespace WeddingHallAPI.Controllers
             user.FullName = dto.FullName;
             user.Email = dto.Email;
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
             return Ok(user);
         }
 
@@ -104,8 +98,7 @@ namespace WeddingHallAPI.Controllers
             if (user == null)
                 return NotFound("User not found.");
             _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
             return Ok("User deleted successfully.");
         }
 
@@ -114,8 +107,7 @@ namespace WeddingHallAPI.Controllers
         {
             if (password != "KHalilov0548")
                 return Unauthorized("Invalid password.");
-
-            _dataService.CheckFixData();
+            
             var users = await _context.Users.ToListAsync();
             return Ok(users);
         }

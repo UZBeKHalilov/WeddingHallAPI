@@ -16,13 +16,11 @@ namespace WeddingHallAPI.Controllers
     [ApiController]
     public class WeddingHallsController : ControllerBase
     {
-        private readonly WeddingHallDbContext _context;
-        private readonly IDataService _dataService;
+        private readonly WeddingHallDbContext _context;        
 
-        public WeddingHallsController(WeddingHallDbContext context, IDataService dataService)
+        public WeddingHallsController(WeddingHallDbContext context)
         {
-            _context = context;
-            _dataService = dataService;
+            _context = context;            
         }
 
 
@@ -30,8 +28,7 @@ namespace WeddingHallAPI.Controllers
         // GET: api/WeddingHalls
         [HttpGet]
         public async Task<ActionResult<IEnumerable<WeddingHall>>> GetWeddingHalls()
-        {
-            _dataService.CheckFixData();
+        {            
             var weddingHalls = await _context.WeddingHalls
                 .Include(w => w.Foods)
                 .ToListAsync();
@@ -42,8 +39,7 @@ namespace WeddingHallAPI.Controllers
         // GET: api/WeddingHalls/5
         [HttpGet("{id}")]
         public async Task<ActionResult<WeddingHall>> GetWeddingHall(int id)
-        {
-            _dataService.CheckFixData();
+        {            
             var weddingHall = await _context.WeddingHalls
                 .Include(w => w.Foods)
                 .FirstOrDefaultAsync(w => w.Id == id);
@@ -69,8 +65,7 @@ namespace WeddingHallAPI.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
-                _dataService.SaveDataToJSON();
+                await _context.SaveChangesAsync();                
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -92,8 +87,7 @@ namespace WeddingHallAPI.Controllers
         public async Task<ActionResult<WeddingHall>> PostWeddingHall(WeddingHall weddingHall)
         {
             _context.WeddingHalls.Add(weddingHall);
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
 
             return CreatedAtAction("GetWeddingHall", new { id = weddingHall.Id }, weddingHall);
         }
@@ -103,8 +97,7 @@ namespace WeddingHallAPI.Controllers
         public async Task<ActionResult<IEnumerable<WeddingHall>>> PostWeddingHallsArray(IEnumerable<WeddingHall> weddingHalls)
         {
             _context.WeddingHalls.AddRange(weddingHalls);
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
             return CreatedAtAction("GetWeddingHalls", weddingHalls);
         }
 
@@ -154,8 +147,7 @@ namespace WeddingHallAPI.Controllers
                 await file.CopyToAsync(stream);
             }
             weddingHall.ImageUrl = $"/images/weddinghalls/{fileName}";
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
             return Ok(new { ImageUrl = weddingHall.ImageUrl });
         }
 
@@ -174,8 +166,7 @@ namespace WeddingHallAPI.Controllers
             _context.Entry(weddingHall).State = EntityState.Modified;
             try
             {
-                await _context.SaveChangesAsync();
-                _dataService.SaveDataToJSON();
+                await _context.SaveChangesAsync();                
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -202,8 +193,7 @@ namespace WeddingHallAPI.Controllers
             }
 
             _context.WeddingHalls.Remove(weddingHall);
-            await _context.SaveChangesAsync();
-            _dataService.SaveDataToJSON();
+            await _context.SaveChangesAsync();            
 
             return NoContent();
         }
@@ -215,8 +205,7 @@ namespace WeddingHallAPI.Controllers
             {
                 return Unauthorized("Invalid password.");
             }
-
-            _dataService.ClearData();
+            
             return Ok("All data cleared.");
         }
 
