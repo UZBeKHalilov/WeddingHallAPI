@@ -23,7 +23,7 @@ namespace WeddingHallAPI.Controllers
         private readonly WeddingHallDbContext _context = context;
         private readonly IEmailOtpService _emailOtpService = emailOtpService;
 
-        private readonly AuthSettings _authSettings = (AuthSettings)authSettings;
+        private readonly AuthSettings _authSettings = authSettings.Value;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
