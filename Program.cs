@@ -25,63 +25,6 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen(options =>
 {
-    // Swagger hujjatlari (v1 va v2)
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Version = "1.0",
-        Title = "E-Commerce API",
-        Description = "API for managing an e-commerce platform (v1.0)"
-    });
-    options.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Version = "2.0",
-        Title = "E-Commerce API",
-        Description = "API for managing an e-commerce platform (v2.0)"
-    });
-
-    // JWT Security Definition
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey
-    });
-
-    // Global xavfsizlik talablari
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
-
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    // Swagger hujjatlari (v1 va v2)
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Version = "1.0",
-        Title = "E-Commerce API",
-        Description = "API for managing an e-commerce platform (v1.0)"
-    });
-    options.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Version = "2.0",
-        Title = "E-Commerce API",
-        Description = "API for managing an e-commerce platform (v2.0)"
-    });
 
     // JWT Security Definition
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -117,7 +60,7 @@ var authSettingsSection = builder.Configuration.GetSection("AuthSettings");
 AuthSettings? authSettings = authSettingsSection.Exists() && authSettingsSection.Get<AuthSettings>() != null
     ? authSettingsSection.Get<AuthSettings>()
     : System.Text.Json.JsonSerializer.Deserialize<AuthSettings>(
-        Environment.GetEnvironmentVariable("AuthSettings") ?? "{}"
+        Environment.GetEnvironmentVariable("AuthSettings") ?? "Unknown!AUTH*settings$"
     );
 
 builder.Services.Configure<AuthSettings>(options =>
