@@ -1,20 +1,29 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WeddingHallAPI.Data;
+using WeddingHallAPI.DTOs;
 using WeddingHallAPI.Models;
 using WeddingHallAPI.Services;
-using WeddingHallAPI.DTOs;
+
 
 namespace WeddingHallAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController(WeddingHallDbContext context, IEmailOtpService emailOtpService) : ControllerBase
+    public class UsersController(WeddingHallDbContext context, IEmailOtpService emailOtpService, IOptions<AuthSettings> authSettings) : ControllerBase
     {
         private readonly WeddingHallDbContext _context = context;
         private readonly IEmailOtpService _emailOtpService = emailOtpService;
+
+        private readonly AuthSettings _authSettings = (AuthSettings)authSettings;
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
@@ -66,7 +75,7 @@ namespace WeddingHallAPI.Controllers
             user.OtpAttempts = 0;
             await _context.SaveChangesAsync();            
 
-            return Ok(user);
+            return Ok(GenerateJwtToken(user));
         }
 
         [HttpGet("get-user/{email}")]
@@ -102,6 +111,7 @@ namespace WeddingHallAPI.Controllers
             return Ok("User deleted successfully.");
         }
 
+        [Authorize]
         [HttpGet("get-all-users")]
         public async Task<IActionResult> GetAllUsers(string password)
         {
@@ -117,5 +127,27 @@ namespace WeddingHallAPI.Controllers
         {
             return new Random().Next(100000, 999999).ToString();
         }
+
+        private string GenerateJwtToken(User user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_authSettings.Secret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                }),
+
+                Expires = DateTime.UtcNow.AddDays(3),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
     }
 }
