@@ -47,8 +47,7 @@
               "ViewState": "AgIAAAEAAAAAZGZmZuYcwD4AAABVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-15T12:51:11.04Z",
-              "IsPinned": true,
-              "EditorCaption": ""
+              "IsPinned": true
             },
             {
               "$type": "Bookmark",
@@ -80,8 +79,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAABYAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-05-22T05:54:39.486Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-22T05:54:39.486Z"
             },
             {
               "$type": "Document",
@@ -115,7 +113,7 @@
               "RelativeDocumentMoniker": "Controllers\\UsersController.cs",
               "ToolTip": "C:\\Users\\Abdulloh\\Desktop\\GitHub\\WeddingHallAPI\\Controllers\\UsersController.cs",
               "RelativeToolTip": "Controllers\\UsersController.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAAACkAAAAOAAAAAAAAAA==",
+              "ViewState": "AgIAADUAAAAAAAAAAAAAAE0AAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-21T15:51:46.862Z",
               "EditorCaption": ""

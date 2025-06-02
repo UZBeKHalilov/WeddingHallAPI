@@ -75,7 +75,8 @@ namespace WeddingHallAPI.Controllers
             user.OtpAttempts = 0;
             await _context.SaveChangesAsync();            
 
-            return Ok(GenerateJwtToken(user));
+            var accessToken = GenerateJwtToken(user);
+            return Ok(new {user.Email, user.FullName, accessToken});
         }
 
         [HttpGet("get-user/{email}")]
